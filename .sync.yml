@@ -2,6 +2,8 @@
   default_configs:
     Metrics/LineLength:
       Enabled: false
+    Layout/IndentHeredoc:
+      Enabled: false
 Gemfile:
   required:
     ':system_tests':
