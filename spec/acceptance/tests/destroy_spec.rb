@@ -1,27 +1,36 @@
-test_name 'should be able to remove a host record'
+require 'spec_helper_acceptance'
 
-tag 'audit:low',
-    'audit:refactor',  # Use block style `test_name`
-    'audit:acceptance' # Could be done at the integration (or unit) layer though
-# actual changing of resources could irreparably damage a
-# host running this, or require special permissions.
+RSpec.context 'when managing host files' do
+  agents.each do |agent|
+    context "on #{agent}" do
+      let(:target) { agent.tmpfile('host-destroy') }
 
-agents.each do |agent|
-  file = agent.tmpfile('host-destroy')
-  line = '127.0.0.7 test1'
+      after(:each) do
+        on(agent, "test #{target} && rm -f #{target}")
+      end
 
-  step 'set up files for the test'
-  on agent, "printf '#{line}\n' > #{file}"
+      it 'deletes a host record' do
+        line = '127.0.0.7 test1'
 
-  step 'delete the resource from the file'
-  on(agent, puppet_resource('host', 'test1', "target=#{file}",
-                            'ensure=absent', 'ip=127.0.0.7'))
+        on agent, "printf '#{line}\n' > #{target}"
+        on(agent, puppet_resource('host', 'test1', "target=#{target}",
+                                  'ensure=absent', 'ip=127.0.0.7'))
+        on(agent, "cat #{target}") do |result|
+          fail_test 'the content was still present' if result.stdout.include? line
+        end
+      end
 
-  step 'verify that the content was removed'
-  on(agent, "cat #{file}; rm -f #{file}") do
-    fail_test 'the content was still present' if stdout.include? line
+      it 'does not purge valid host records if file contains malformed content' do
+        on(agent, "printf '127.0.0.2 existing alias\n' > #{target}")
+        on(agent, "printf '==\n' >> #{target}")
+
+        on(agent, puppet_resource('host', 'test', "target=#{target}",
+                                  'ensure=present', 'ip=127.0.0.3', 'host_aliases=foo'))
+
+        on(agent, "cat #{target}") do |result|
+          fail_test 'existing host data was deleted' unless result.stdout.include? 'existing'
+        end
+      end
+    end
   end
-
-  step 'clean up after the test'
-  on agent, "rm -f #{file}"
 end
