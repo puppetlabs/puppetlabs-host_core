@@ -1,6 +1,10 @@
 require 'puppet/property/ordered_list'
 
 Puppet::Type.newtype(:host) do
+  @doc = "Installs and manages host entries.  For most systems, these
+      entries will just be in `/etc/hosts`, but some systems (notably OS X)
+      will have different solutions."
+
   ensurable
 
   newproperty(:ip) do
@@ -90,8 +94,4 @@ Puppet::Type.newtype(:host) do
       raise Puppet::Error, _('Hostname cannot include newline') if value =~ %r{\n} || value =~ %r{\r}
     end
   end
-
-  @doc = "Installs and manages host entries.  For most systems, these
-      entries will just be in `/etc/hosts`, but some systems (notably OS X)
-      will have different solutions."
 end
