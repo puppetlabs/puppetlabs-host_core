@@ -9,17 +9,12 @@ describe Puppet::Type.type(:host).provider(:parsed) do
   let(:provider) { described_class }
   let(:hostfile) { tmpfile('hosts') }
 
-  before(:each) do
-    provider.any_instance.stubs(:target).returns hostfile
-  end
-
   after :each do
     provider.initvars
   end
 
   def mkhost(args)
-    hostresource = Puppet::Type::Host.new(name: args[:name])
-    hostresource.stubs(:should).with(:target).returns hostfile
+    hostresource = Puppet::Type::Host.new(name: args[:name], target: hostfile)
 
     # Using setters of provider to build our testobject
     # Note: We already proved, that in case of host_aliases
