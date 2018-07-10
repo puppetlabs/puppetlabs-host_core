@@ -6,14 +6,10 @@ require 'pathname'
 # A support module for testing files.
 module PuppetSpec::Files
   def self.cleanup
-      begin
-        Dir.unstub(:entries)
-        FileUtils.rm_rf path, secure: true
-      rescue Errno::ENOENT
-        # nothing to do
-      end
     @global_tempfiles ||= []
     while path = @global_tempfiles.pop
+      Dir.unstub(:entries)
+      FileUtils.rm_rf path, secure: true
     end
   end
 
