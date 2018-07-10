@@ -1,0 +1,4 @@
+.rubocop.yml:
+  default_configs:
+    Metrics/LineLength:
+      Enabled: false
