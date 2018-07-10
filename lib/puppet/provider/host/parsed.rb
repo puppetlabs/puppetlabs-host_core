@@ -12,6 +12,10 @@ end
 
 Puppet::Type.type(:host).provide(:parsed, parent: Puppet::Provider::ParsedFile,
                                           default_target: hosts, filetype: :flat) do
+  @doc = "Installs and manages host entries.  For most systems, these
+      entries will just be in `/etc/hosts`, but some systems (notably OS X)
+      will have different solutions."
+
   confine exists: hosts
 
   text_line :comment, match: %r{^#}
