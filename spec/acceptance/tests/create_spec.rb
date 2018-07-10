@@ -1,23 +1,56 @@
-test_name 'host should create'
+require 'spec_helper_acceptance'
 
-tag 'audit:low',
-    'audit:refactor',  # Use block style `test_name`
-    'audit:acceptance' # Could be done at the integration (or unit) layer though
-# actual changing of resources could irreparably damage a
-# host running this, or require special permissions.
+RSpec.context 'when creating host files' do
+  agents.each do |agent|
+    context "on #{agent}" do
+      let(:target) { agent.tmpfile('host-create') }
 
-agents.each do |agent|
-  target = agent.tmpfile('host-create')
+      after(:each) do
+        on(agent, "test #{target} && rm -f #{target}")
+      end
 
-  step 'clean up for the test'
-  on agent, "rm -f #{target}"
+      it 'creates a host record' do
+        on(agent, puppet_resource('host', 'test', 'ensure=present',
+                                  'ip=127.0.0.1', "target=#{target}"))
+        on(agent, "cat #{target}") do |result|
+          fail_test 'record was not present' if result.stdout !~ %r{^127\.0\.0\.1[[:space:]]+test}
+        end
+      end
 
-  step 'create the host record'
-  on(agent, puppet_resource('host', 'test', 'ensure=present',
-                            'ip=127.0.0.1', "target=#{target}"))
+      it 'creates host aliases' do
+        on(agent, puppet_resource('host', 'test', 'ensure=present',
+                                  'ip=127.0.0.7', "target=#{target}", 'host_aliases=alias'))
 
-  step 'verify that the record was created'
-  on(agent, "cat #{target} ; rm -f #{target}") do
-    fail_test 'record was not present' unless stdout =~ %r{^127\.0\.0\.1[[:space:]]+test}
+        on(agent, "cat #{target}") do |result|
+          fail_test 'alias was missing' unless
+            result.stdout =~ %r{^127\.0\.0\.7[[:space:]]+test[[:space:]]alias}
+        end
+      end
+
+      it "doesn't create the entry if it already exists" do
+        on agent, "printf '127.0.0.2 test alias\n' > #{target}"
+
+        step 'tell puppet to ensure the host exists'
+        on(agent, puppet_resource('host', 'test', "target=#{target}",
+                                  'ensure=present', 'ip=127.0.0.2', 'host_aliases=alias')) do |result|
+          fail_test 'darn, we created the host record' if
+            result.stdout.include? '/Host[test1]/ensure: created'
+        end
+      end
+
+      it 'requires an ipaddress' do
+        skip_test if agent['locale'] == 'ja'
+
+        on(agent, puppet_resource('host', 'test', "target=#{target}",
+                                  'host_aliases=alias')) do |result|
+          fail_test "puppet didn't complain about the missing attribute" unless
+            result.stderr.include? 'ip is a required attribute for hosts'
+        end
+
+        on(agent, "cat #{target}") do |result|
+          fail_test 'the host was apparently added to the file' if result.stdout.include? 'test'
+        end
+      end
+    end
   end
 end
