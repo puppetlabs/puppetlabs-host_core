@@ -11,3 +11,9 @@ require 'puppet_spec/files'
 Pathname.glob("#{dir}/shared_behaviours/**/*.rb") do |behaviour|
   require behaviour.relative_path_from(Pathname.new(dir))
 end
+
+RSpec.configure do |c|
+  c.after :each do
+    PuppetSpec::Files.cleanup
+  end
+end
