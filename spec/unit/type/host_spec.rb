@@ -1,80 +1,75 @@
 require 'spec_helper'
 
-host = Puppet::Type.type(:host)
+FakeHostProvider = Struct.new(:ip, :host_aliases, :comment)
 
-describe host do
-  FakeHostProvider = Struct.new(:ip, :host_aliases, :comment)
-  before(:each) do
-    @class = host
-    @catalog = Puppet::Resource::Catalog.new
-    @provider = FakeHostProvider.new
-    @resource = stub 'resource', resource: nil, provider: @provider
-  end
+describe Puppet::Type.type(:host) do
+  let(:provider) { FakeHostProvider.new }
+  let(:resource) { stub('resource', resource: nil, provider: provider) }
 
   it 'has :name be its namevar' do
-    expect(@class.key_attributes).to eq([:name])
+    expect(described_class.key_attributes).to eq([:name])
   end
 
   describe 'when validating attributes' do
     [:name, :provider].each do |param|
       it "should have a #{param} parameter" do
-        expect(@class.attrtype(param)).to eq(:param)
+        expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
     [:ip, :target, :host_aliases, :comment, :ensure].each do |property|
       it "should have a #{property} property" do
-        expect(@class.attrtype(property)).to eq(:property)
+        expect(described_class.attrtype(property)).to eq(:property)
       end
     end
 
     it 'has a list host_aliases' do
-      expect(@class.attrclass(:host_aliases).ancestors).to be_include(Puppet::Property::OrderedList)
+      expect(described_class.attrclass(:host_aliases).ancestors).to be_include(Puppet::Property::OrderedList)
     end
   end
 
   describe 'when validating values' do
     it 'supports present as a value for ensure' do
-      expect { @class.new(name: 'foo', ensure: :present) }.not_to raise_error
+      expect { described_class.new(name: 'foo', ensure: :present) }.not_to raise_error
     end
 
     it 'supports absent as a value for ensure' do
-      expect { @class.new(name: 'foo', ensure: :absent) }.not_to raise_error
+      expect { described_class.new(name: 'foo', ensure: :absent) }.not_to raise_error
     end
 
     it 'accepts IPv4 addresses' do
-      expect { @class.new(name: 'foo', ip: '10.96.0.1') }.not_to raise_error
+      expect { described_class.new(name: 'foo', ip: '10.96.0.1') }.not_to raise_error
     end
 
     it 'accepts long IPv6 addresses' do
       # Taken from wikipedia article about ipv6
-      expect { @class.new(name: 'foo', ip: '2001:0db8:85a3:08d3:1319:8a2e:0370:7344') }.not_to raise_error
+      expect { described_class.new(name: 'foo', ip: '2001:0db8:85a3:08d3:1319:8a2e:0370:7344') }.not_to raise_error
     end
 
     it 'accepts one host_alias' do
-      expect { @class.new(name: 'foo', host_aliases: 'alias1') }.not_to raise_error
+      expect { described_class.new(name: 'foo', host_aliases: 'alias1') }.not_to raise_error
     end
 
     it 'accepts multiple host_aliases' do
-      expect { @class.new(name: 'foo', host_aliases: ['alias1', 'alias2']) }.not_to raise_error
+      expect { described_class.new(name: 'foo', host_aliases: ['alias1', 'alias2']) }.not_to raise_error
     end
 
     it 'accepts shortened IPv6 addresses' do
-      expect { @class.new(name: 'foo', ip: '2001:db8:0:8d3:0:8a2e:70:7344') }.not_to raise_error
-      expect { @class.new(name: 'foo', ip: '::ffff:192.0.2.128') }.not_to raise_error
-      expect { @class.new(name: 'foo', ip: '::1') }.not_to raise_error
+      expect { described_class.new(name: 'foo', ip: '2001:db8:0:8d3:0:8a2e:70:7344') }.not_to raise_error
+      expect { described_class.new(name: 'foo', ip: '::ffff:192.0.2.128') }.not_to raise_error
+      expect { described_class.new(name: 'foo', ip: '::1') }.not_to raise_error
     end
 
     it 'does not accept malformed IPv4 addresses like 192.168.0.300' do
-      expect { @class.new(name: 'foo', ip: '192.168.0.300') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
+      expect { described_class.new(name: 'foo', ip: '192.168.0.300') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
     end
 
     it 'rejects over-long IPv4 addresses' do
-      expect { @class.new(name: 'foo', ip: '10.10.10.10.10') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
+      expect { described_class.new(name: 'foo', ip: '10.10.10.10.10') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
     end
 
     it 'does not accept malformed IP addresses like 2001:0dg8:85a3:08d3:1319:8a2e:0370:7344' do
-      expect { @class.new(name: 'foo', ip: '2001:0dg8:85a3:08d3:1319:8a2e:0370:7344') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
+      expect { described_class.new(name: 'foo', ip: '2001:0dg8:85a3:08d3:1319:8a2e:0370:7344') }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
     end
 
     # Assorted, annotated IPv6 passes.
@@ -262,7 +257,7 @@ describe host do
      '::0:a:b:c:d:e:f', # syntactically correct, but bad form (::0:... could be combined)
      'a:b:c:d:e:f:0::'].each do |ip|
       it "should accept #{ip.inspect} as an IPv6 address" do
-        expect { @class.new(name: 'foo', ip: ip) }.not_to raise_error
+        expect { described_class.new(name: 'foo', ip: ip) }.not_to raise_error
       end
     end
 
@@ -593,82 +588,78 @@ describe host do
      '::3333:4444:5555:6666:7777:8888:',
      '::2222:3333:4444:5555:6666:7777:8888:'].each do |ip|
       it "should reject #{ip.inspect} as an IPv6 address" do
-        expect { @class.new(name: 'foo', ip: ip) }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
+        expect { described_class.new(name: 'foo', ip: ip) }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
       end
     end
 
     it 'does not accept newlines in resourcename' do
-      expect { @class.new(name: "fo\no", ip: '127.0.0.1') }.to raise_error(Puppet::ResourceError, %r{Hostname cannot include newline})
+      expect { described_class.new(name: "fo\no", ip: '127.0.0.1') }.to raise_error(Puppet::ResourceError, %r{Hostname cannot include newline})
     end
 
     it 'does not accept newlines in ipaddress' do
-      expect { @class.new(name: 'foo', ip: "127.0.0.1\n") }.to raise_error(Puppet::ResourceError, %r{Invalid IP address})
+      expect { described_class.new(name: 'foo', ip: "127.0.0.1\n") }.to raise_error(Puppet::ResourceError, %r{Invalid IP address})
     end
 
     it 'does not accept newlines in host_aliases' do
-      expect { @class.new(name: 'foo', ip: '127.0.0.1', host_aliases: ['well_formed', "thisalias\nhavenewline"]) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot include whitespace})
+      expect { described_class.new(name: 'foo', ip: '127.0.0.1', host_aliases: ['well_formed', "thisalias\nhavenewline"]) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot include whitespace})
     end
 
     it 'does not accept newlines in comment' do
-      expect { @class.new(name: 'foo', ip: '127.0.0.1', comment: "Test of comment blah blah \n test 123") }.to raise_error(Puppet::ResourceError, %r{Comment cannot include newline})
+      expect { described_class.new(name: 'foo', ip: '127.0.0.1', comment: "Test of comment blah blah \n test 123") }.to raise_error(Puppet::ResourceError, %r{Comment cannot include newline})
     end
 
     it 'does not accept spaces in resourcename' do
-      expect { @class.new(name: 'foo bar') }.to raise_error(Puppet::ResourceError, %r{Invalid host name})
+      expect { described_class.new(name: 'foo bar') }.to raise_error(Puppet::ResourceError, %r{Invalid host name})
     end
 
     it 'does not accept host_aliases with spaces' do
-      expect { @class.new(name: 'foo', host_aliases: ['well_formed', 'not wellformed']) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot include whitespace})
+      expect { described_class.new(name: 'foo', host_aliases: ['well_formed', 'not wellformed']) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot include whitespace})
     end
 
     it 'does not accept empty host_aliases' do
-      expect { @class.new(name: 'foo', host_aliases: ['alias1', '']) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot be an empty string})
+      expect { described_class.new(name: 'foo', host_aliases: ['alias1', '']) }.to raise_error(Puppet::ResourceError, %r{Host aliases cannot be an empty string})
     end
   end
 
   describe 'when syncing' do
     it 'sends the first value to the provider for ip property' do
-      @ip = @class.attrclass(:ip).new(resource: @resource, should: ['192.168.0.1', '192.168.0.2'])
+      ip = described_class.attrclass(:ip).new(resource: resource, should: ['192.168.0.1', '192.168.0.2'])
+      ip.sync
 
-      @ip.sync
-
-      expect(@provider.ip).to eq('192.168.0.1')
+      expect(provider.ip).to eq('192.168.0.1')
     end
 
     it 'sends the first value to the provider for comment property' do
-      @comment = @class.attrclass(:comment).new(resource: @resource, should: ['Bazinga', 'Notme'])
+      comment = described_class.attrclass(:comment).new(resource: resource, should: ['Bazinga', 'Notme'])
+      comment.sync
 
-      @comment.sync
-
-      expect(@provider.comment).to eq('Bazinga')
+      expect(provider.comment).to eq('Bazinga')
     end
 
     it 'sends the joined array to the provider for host_alias' do
-      @host_aliases = @class.attrclass(:host_aliases).new(resource: @resource, should: ['foo', 'bar'])
+      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases.sync
 
-      @host_aliases.sync
-
-      expect(@provider.host_aliases).to eq('foo bar')
+      expect(provider.host_aliases).to eq('foo bar')
     end
 
     it 'alsoes use the specified delimiter for joining' do
-      @host_aliases = @class.attrclass(:host_aliases).new(resource: @resource, should: ['foo', 'bar'])
-      @host_aliases.stubs(:delimiter).returns "\t"
+      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases.stubs(:delimiter).returns "\t"
+      host_aliases.sync
 
-      @host_aliases.sync
-
-      expect(@provider.host_aliases).to eq("foo\tbar")
+      expect(provider.host_aliases).to eq("foo\tbar")
     end
 
     it 'cares about the order of host_aliases' do
-      @host_aliases = @class.attrclass(:host_aliases).new(resource: @resource, should: ['foo', 'bar'])
-      expect(@host_aliases.insync?(['foo', 'bar'])).to eq(true)
-      expect(@host_aliases.insync?(['bar', 'foo'])).to eq(false)
+      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      expect(host_aliases.insync?(['foo', 'bar'])).to eq(true)
+      expect(host_aliases.insync?(['bar', 'foo'])).to eq(false)
     end
 
     it 'does not consider aliases to be in sync if should is a subset of current' do
-      @host_aliases = @class.attrclass(:host_aliases).new(resource: @resource, should: ['foo', 'bar'])
-      expect(@host_aliases.insync?(['foo', 'bar', 'anotherone'])).to eq(false)
+      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      expect(host_aliases.insync?(['foo', 'bar', 'anotherone'])).to eq(false)
     end
   end
 end
