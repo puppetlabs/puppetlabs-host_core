@@ -9,9 +9,13 @@ module Puppet
 
       def valid_v4?(addr)
         if %r{^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$} =~ addr
-          return $LAST_MATCH_INFO.captures.all? { |i| i = i.to_i; i >= 0 && i <= 255 }
+          $LAST_MATCH_INFO.captures.all? do |i|
+            i = i.to_i
+            i >= 0 && i <= 255
+          end
+        else
+          false
         end
-        false
       end
 
       def valid_v6?(addr)
