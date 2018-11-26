@@ -4,7 +4,7 @@
 #### Table of Contents
 
 1. [Description](#description)
-2. [Usage - Configuration options and additional functionality](#usage)
+2. [Reference](#reference)
 3. [Development - Guide for contributing to the module](#development)
 
 ## Description
@@ -24,13 +24,9 @@ host { 'localhost':
 }
 ```
 
-## Usage
-
-For details on usage, please see [the host puppet docs](https://puppet.com/docs/puppet/latest/types/host.html).
-
 ## Reference
 
-Please see REFERENCE.md for the reference documentation.
+Please see [`REFERENCE.md`](REFERENCE.md) for the reference documentation.
 
 This module is documented using Puppet Strings.
 
