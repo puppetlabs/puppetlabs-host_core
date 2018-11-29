@@ -4,14 +4,17 @@
 #### Table of Contents
 
 1. [Description](#description)
-2. [Reference](#reference)
-3. [Development - Guide for contributing to the module](#development)
+2. [Usage](#usage)
+3. [Reference](#reference)
+4. [Development - Guide for contributing to the module](#development)
 
+<a id="description"></a>
 ## Description
 
 The host_core module is used to manage host entries in a hosts file. For most systems, the hosts file is located in `/etc/hosts`.
 
-### Beginning with host_core
+<a id="usage"></a>
+## Usage
 
 To configure a `localhost` host entry to resolve to an `ip` with a list of `host_aliases`, use the following code:
 
@@ -24,9 +27,10 @@ host { 'localhost':
 }
 ```
 
+<a id="reference"></a>
 ## Reference
 
-Please see [`REFERENCE.md`](REFERENCE.md) for the reference documentation.
+Please see REFERENCE.md for the reference documentation.
 
 This module is documented using Puppet Strings.
 
@@ -39,6 +43,7 @@ bundle exec puppet strings generate ./lib/**/*.rb
 ```
 This command will create a browsable `_index.html` file in the `doc` directory. The references available here are all generated from YARD-style comments embedded in the code base. When any development happens on this module, the impacted documentation should also be updated.
 
+<a id="development"></a>
 ## Development
 
 Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
