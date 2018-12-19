@@ -3,16 +3,18 @@
 
 #### 目次
 
-1. [説明](#description)
-2. [使用 - 設定オプションと追加機能](#usage)
-3. [開発 - モジュール貢献についてのガイド](#development)
+1. [Description](#description)
+2. [使用](#usage)
+3. [リファレンス](#reference)
+4. [開発 - モジュール貢献についてのガイド](#development)
 
 <a id="description"></a>
 ## 説明
 
 host_coreモジュールは、ホストファイル内のホストエントリの管理に用いられます。ほとんどのシステムでは、ホストファイルは`/etc/hosts`にあります。
 
-### host_coreモジュールの利用方法
+<a id="usage"></a>
+## 使用
 
 `host_aliases`のリストを用いて`ip`を解決するための`localhost`ホストエントリを設定するには、以下のコードを使用します。
 
@@ -25,11 +27,7 @@ host { 'localhost':
 }
 ```
 
-<a id="usage"></a>
-## 使用
-
-利用方法の詳細については、[host puppetドキュメント](https://puppet.com/docs/puppet/latest/types/host.html)を参照してください。
-
+<a id="reference"></a>
 ## リファレンス
 
 リファレンス文書については、REFERENCE.mdを参照してください。
