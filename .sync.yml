@@ -38,3 +38,6 @@ Gemfile:
       - gem: puppet-strings
 .gitlab-ci.yml:
   delete: true
+
+Rakefile:
+  changelog_version_tag_pattern: '%s'
