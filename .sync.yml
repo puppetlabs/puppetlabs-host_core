@@ -1,6 +1,6 @@
 .rubocop.yml:
   default_configs:
-    Metrics/LineLength:
+    Layout/LineLength:
       Enabled: false
     Layout/IndentHeredoc:
       Enabled: false
