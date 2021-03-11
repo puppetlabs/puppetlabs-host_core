@@ -29,10 +29,10 @@ describe Puppet::Type.type(:host).provider(:parsed) do
   end
 
   def genhost(host)
-    provider.stubs(:filetype).returns(Puppet::Util::FileType::FileTypeRam)
-    File.stubs(:chown)
-    File.stubs(:chmod)
-    Puppet::Util::SUIDManager.stubs(:asuser).yields
+    allow(provider).to receive(:filetype).and_return(Puppet::Util::FileType::FileTypeRam)
+    allow(File).to receive(:chown)
+    allow(File).to receive(:chmod)
+    allow(Puppet::Util::SUIDManager).to receive(:asuser).and_yield
     host.flush
     provider.target_object(hostfile).read
   end
