@@ -4,7 +4,7 @@ FakeHostProvider = Struct.new(:ip, :host_aliases, :comment)
 
 describe Puppet::Type.type(:host) do
   let(:provider) { FakeHostProvider.new }
-  let(:resource) { stub('resource', resource: nil, provider: provider) }
+  let(:resource) { instance_double('Puppet::Type::Host', provider: provider) }
 
   it 'has :name be its namevar' do
     expect(described_class.key_attributes).to eq([:name])
@@ -645,7 +645,7 @@ describe Puppet::Type.type(:host) do
 
     it 'alsoes use the specified delimiter for joining' do
       host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
-      host_aliases.stubs(:delimiter).returns "\t"
+      allow(host_aliases).to receive(:delimiter).and_return "\t"
       host_aliases.sync
 
       expect(provider.host_aliases).to eq("foo\tbar")
