@@ -16,7 +16,7 @@ RSpec.context 'when modifying host files' do
 
         on(agent, "cat #{target}") do |result|
           fail_test 'the address was not updated' unless
-            result.stdout =~ %r{^127\.0\.0\.10[[:space:]]+test[[:space:]]+alias[[:space:]]*$}
+            %r{^127\.0\.0\.10[[:space:]]+test[[:space:]]+alias[[:space:]]*$}.match?(result.stdout)
         end
       end
 
@@ -27,7 +27,7 @@ RSpec.context 'when modifying host files' do
 
         on(agent, "cat #{target}") do |result|
           fail_test 'the alias was not updated' unless
-            result.stdout =~ %r{^127\.0\.0\.8[[:space:]]+test[[:space:]]+banzai[[:space:]]*$}
+            %r{^127\.0\.0\.8[[:space:]]+test[[:space:]]+banzai[[:space:]]*$}.match?(result.stdout)
         end
       end
     end

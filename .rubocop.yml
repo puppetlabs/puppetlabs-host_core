@@ -121,7 +121,7 @@ Performance/SortReverse:
 Performance/Squeeze:
   Enabled: true
 Performance/StringInclude:
-  Enabled: true
+  Enabled: false 
 Performance/Sum:
   Enabled: true
 Style/CollectionMethods:

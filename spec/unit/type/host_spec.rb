@@ -12,13 +12,13 @@ describe Puppet::Type.type(:host) do
 
   describe 'when validating attributes' do
     [:name, :provider].each do |param|
-      it "should have a #{param} parameter" do
+      it "has a #{param} parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end
     end
 
     [:ip, :target, :host_aliases, :comment, :ensure].each do |property|
-      it "should have a #{property} property" do
+      it "has a #{property} property" do
         expect(described_class.attrtype(property)).to eq(:property)
       end
     end
@@ -256,7 +256,7 @@ describe Puppet::Type.type(:host) do
      '0:a:b:c:d:e:f::',
      '::0:a:b:c:d:e:f', # syntactically correct, but bad form (::0:... could be combined)
      'a:b:c:d:e:f:0::'].each do |ip|
-      it "should accept #{ip.inspect} as an IPv6 address" do
+      it "accepts #{ip.inspect} as an IPv6 address" do
         expect { described_class.new(name: 'foo', ip: ip) }.not_to raise_error
       end
     end
@@ -587,7 +587,7 @@ describe Puppet::Type.type(:host) do
      '1111::3333:4444:5555:6666:7777:8888:',
      '::3333:4444:5555:6666:7777:8888:',
      '::2222:3333:4444:5555:6666:7777:8888:'].each do |ip|
-      it "should reject #{ip.inspect} as an IPv6 address" do
+      it "rejects #{ip.inspect} as an IPv6 address" do
         expect { described_class.new(name: 'foo', ip: ip) }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
       end
     end

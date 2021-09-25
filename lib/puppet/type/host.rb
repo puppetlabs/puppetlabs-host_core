@@ -46,8 +46,8 @@ Puppet::Type.newtype(:host) do
 
     validate do |value|
       # This regex already includes newline check.
-      raise Puppet::Error, _('Host aliases cannot include whitespace') if value =~ %r{\s}
-      raise Puppet::Error, _('Host aliases cannot be an empty string. Use an empty array to delete all host_aliases ') if value =~ %r{^\s*$}
+      raise Puppet::Error, _('Host aliases cannot include whitespace') if %r{\s}.match?(value)
+      raise Puppet::Error, _('Host aliases cannot be an empty string. Use an empty array to delete all host_aliases ') if %r{^\s*$}.match?(value)
     end
   end
 
@@ -80,7 +80,7 @@ Puppet::Type.newtype(:host) do
 
     validate do |value|
       value.split('.').each do |hostpart|
-        if hostpart !~ %r{^([\w]+|[\w][\w\-]+[\w])$}
+        unless %r{^([\w]+|[\w][\w\-]+[\w])$}.match?(hostpart)
           raise Puppet::Error, _('Invalid host name')
         end
       end
