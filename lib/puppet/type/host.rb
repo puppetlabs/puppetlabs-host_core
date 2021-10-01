@@ -1,9 +1,10 @@
 require 'puppet/property/ordered_list'
 
 Puppet::Type.newtype(:host) do
-  @doc = "Installs and manages host entries.  For most systems, these
-      entries will just be in `/etc/hosts`, but some systems (notably OS X)
-      will have different solutions."
+  @doc = "@summary Installs and manages host entries.
+
+      For most systems, these entries will just be in `/etc/hosts`, but some
+      systems (notably OS X) will have different solutions."
 
   ensurable
 
