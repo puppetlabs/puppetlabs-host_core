@@ -72,23 +72,7 @@ Style/TrailingCommaInArrayLiteral:
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.
   EnforcedStyle: brackets
-Style/SignalException:
-  Enabled: false
-Style/DoubleNegation:
-  Enabled: false
-Style/MultipleComparison:
-  Enabled: false
-Style/NumericPredicate:
-  Enabled: false
 Layout/HeredocIndentation:
-  Enabled: false
-Metrics/BlockNesting:
-  Enabled: false
-Naming/AccessorMethodName:
-  Enabled: false
-Naming/PredicateName:
-  Enabled: false
-RSpec/VariableName:
   Enabled: false
 RSpec/MessageSpies:
   EnforcedStyle: receive
@@ -121,7 +105,7 @@ Performance/SortReverse:
 Performance/Squeeze:
   Enabled: true
 Performance/StringInclude:
-  Enabled: false 
+  Enabled: true
 Performance/Sum:
   Enabled: true
 Style/CollectionMethods:
@@ -258,6 +242,8 @@ Metrics/AbcSize:
   Enabled: false
 Metrics/BlockLength:
   Enabled: false
+Metrics/BlockNesting:
+  Enabled: false
 Metrics/ClassLength:
   Enabled: false
 Metrics/CyclomaticComplexity:
@@ -271,6 +257,8 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Enabled: false
 Migration/DepartmentName:
+  Enabled: false
+Naming/AccessorMethodName:
   Enabled: false
 Naming/BlockParameterName:
   Enabled: false
@@ -443,6 +431,8 @@ Style/MixinUsage:
 Style/MultilineWhenThen:
   Enabled: false
 Style/NegatedUnless:
+  Enabled: false
+Style/NumericPredicate:
   Enabled: false
 Style/OptionalBooleanParameter:
   Enabled: false

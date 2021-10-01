@@ -55,7 +55,7 @@ Puppet::Type.newtype(:host) do
   newproperty(:comment) do
     desc 'A comment that will be attached to the line with a # character.'
     validate do |value|
-      if value =~ %r{\n} || value =~ %r{\r}
+      if value.include?("\n") || value.include?("\r")
         raise Puppet::Error, _('Comment cannot include newline')
       end
     end
@@ -85,7 +85,7 @@ Puppet::Type.newtype(:host) do
           raise Puppet::Error, _('Invalid host name')
         end
       end
-      if value =~ %r{\n} || value =~ %r{\r}
+      if value.include?("\n") || value.include?("\r")
         raise Puppet::Error, _('Hostname cannot include newline')
       end
     end

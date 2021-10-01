@@ -1,26 +1,8 @@
 .rubocop.yml:
   default_configs:
-    Style/SignalException:
-      Enabled: false
-    Style/DoubleNegation:
-      Enabled: false
-    Style/MultipleComparison:
-      Enabled: false
-    Style/NumericPredicate:
-      Enabled: false
-    Style/SignalException:
-      Enabled: false
     Layout/HeredocIndentation:
       Enabled: false
     Layout/LineLength:
-      Enabled: false
-    Metrics/BlockNesting:
-      Enabled: false
-    Naming/AccessorMethodName:
-      Enabled: false
-    Naming/PredicateName:
-      Enabled: false
-    RSpec/VariableName:
       Enabled: false
 Gemfile:
   optional:
