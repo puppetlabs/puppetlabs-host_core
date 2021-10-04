@@ -13,7 +13,7 @@ RSpec.context 'when creating host files' do
         on(agent, puppet_resource('host', 'test', 'ensure=present',
                                   'ip=127.0.0.1', "target=#{target}"))
         on(agent, "cat #{target}") do |result|
-          fail_test 'record was not present' if result.stdout !~ %r{^127\.0\.0\.1[[:space:]]+test}
+          fail_test 'record was not present' unless %r{^127\.0\.0\.1[[:space:]]+test}.match?(result.stdout)
         end
       end
 
@@ -23,7 +23,7 @@ RSpec.context 'when creating host files' do
 
         on(agent, "cat #{target}") do |result|
           fail_test 'alias was missing' unless
-            result.stdout =~ %r{^127\.0\.0\.7[[:space:]]+test[[:space:]]alias}
+            %r{^127\.0\.0\.7[[:space:]]+test[[:space:]]alias}.match?(result.stdout)
         end
       end
 
