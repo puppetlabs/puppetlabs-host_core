@@ -49,16 +49,16 @@ those providers that write to disk. On most systems this defaults to `/etc/hosts
 
 The following parameters are available in the `host` type.
 
-* [`name`](#name)
-* [`provider`](#provider)
+* [`name`](#-host--name)
+* [`provider`](#-host--provider)
 
-##### <a name="name"></a>`name`
+##### <a name="-host--name"></a>`name`
 
 namevar
 
 The host name.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-host--provider"></a>`provider`
 
 The specific backend to use for this `host` resource. You will seldom need to specify this --- Puppet will usually
 discover the appropriate provider for your platform.
