@@ -49,6 +49,9 @@
     },
     {
       "operatingsystem": "AlmaLinux"
+    },
+    {
+      "operatingsystem": "Amazon"
     }
   ],
   "requirements": [
