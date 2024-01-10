@@ -23,7 +23,7 @@ Puppet::Type.newtype(:host) do
     end
 
     def valid_newline?(addr)
-      addr !~ %r{\n} && addr !~ %r{\r}
+      !addr.include?("\n") && !addr.include?("\r")
     end
 
     validate do |value|
