@@ -4,7 +4,7 @@ FakeHostProvider = Struct.new(:ip, :host_aliases, :comment)
 
 describe Puppet::Type.type(:host) do
   let(:provider) { FakeHostProvider.new }
-  let(:resource) { instance_double('Puppet::Type::Host', provider: provider) }
+  let(:resource) { instance_double('Puppet::Type::Host', provider:) }
 
   it 'has :name be its namevar' do
     expect(described_class.key_attributes).to eq([:name])
@@ -257,7 +257,7 @@ describe Puppet::Type.type(:host) do
      '::0:a:b:c:d:e:f', # syntactically correct, but bad form (::0:... could be combined)
      'a:b:c:d:e:f:0::'].each do |ip|
       it "accepts #{ip.inspect} as an IPv6 address" do
-        expect { described_class.new(name: 'foo', ip: ip) }.not_to raise_error
+        expect { described_class.new(name: 'foo', ip:) }.not_to raise_error
       end
     end
 
@@ -588,7 +588,7 @@ describe Puppet::Type.type(:host) do
      '::3333:4444:5555:6666:7777:8888:',
      '::2222:3333:4444:5555:6666:7777:8888:'].each do |ip|
       it "rejects #{ip.inspect} as an IPv6 address" do
-        expect { described_class.new(name: 'foo', ip: ip) }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
+        expect { described_class.new(name: 'foo', ip:) }.to raise_error(Puppet::ResourceError, %r{Parameter ip failed})
       end
     end
 
@@ -623,28 +623,28 @@ describe Puppet::Type.type(:host) do
 
   describe 'when syncing' do
     it 'sends the first value to the provider for ip property' do
-      ip = described_class.attrclass(:ip).new(resource: resource, should: ['192.168.0.1', '192.168.0.2'])
+      ip = described_class.attrclass(:ip).new(resource:, should: ['192.168.0.1', '192.168.0.2'])
       ip.sync
 
       expect(provider.ip).to eq('192.168.0.1')
     end
 
     it 'sends the first value to the provider for comment property' do
-      comment = described_class.attrclass(:comment).new(resource: resource, should: ['Bazinga', 'Notme'])
+      comment = described_class.attrclass(:comment).new(resource:, should: ['Bazinga', 'Notme'])
       comment.sync
 
       expect(provider.comment).to eq('Bazinga')
     end
 
     it 'sends the joined array to the provider for host_alias' do
-      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases = described_class.attrclass(:host_aliases).new(resource:, should: ['foo', 'bar'])
       host_aliases.sync
 
       expect(provider.host_aliases).to eq('foo bar')
     end
 
     it 'alsoes use the specified delimiter for joining' do
-      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases = described_class.attrclass(:host_aliases).new(resource:, should: ['foo', 'bar'])
       allow(host_aliases).to receive(:delimiter).and_return "\t"
       host_aliases.sync
 
@@ -652,13 +652,13 @@ describe Puppet::Type.type(:host) do
     end
 
     it 'cares about the order of host_aliases' do
-      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases = described_class.attrclass(:host_aliases).new(resource:, should: ['foo', 'bar'])
       expect(host_aliases.insync?(['foo', 'bar'])).to eq(true)
       expect(host_aliases.insync?(['bar', 'foo'])).to eq(false)
     end
 
     it 'does not consider aliases to be in sync if should is a subset of current' do
-      host_aliases = described_class.attrclass(:host_aliases).new(resource: resource, should: ['foo', 'bar'])
+      host_aliases = described_class.attrclass(:host_aliases).new(resource:, should: ['foo', 'bar'])
       expect(host_aliases.insync?(['foo', 'bar', 'anotherone'])).to eq(false)
     end
   end
